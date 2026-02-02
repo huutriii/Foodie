@@ -21,8 +21,8 @@ public class Ultils : MonoBehaviour
 
     public static List<T> TakeAndRemoveRandom<T>(List<T> source, int n)
     {
-        List<T> result = new List<T>(); // khởi tạo list để trả về
-        n = Mathf.Min(n, source.Count); // check để số lượng lấy về không vượt quá list
+        List<T> result = new List<T>();
+        n = Mathf.Min(n, source.Count);
 
         for (int i = 0; i < n; i++)
         {

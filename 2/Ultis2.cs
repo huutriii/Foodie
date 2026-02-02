@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Ultis2 : MonoBehaviour
 {
@@ -29,5 +30,26 @@ public class Ultis2 : MonoBehaviour
         }
 
         return result;
+    }
+
+    public static T GetRaycastUI<T>(Vector2 mousePos) where T : MonoBehaviour
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+        pointerEventData.position = mousePos;
+
+        List<RaycastResult> hits = new List<RaycastResult>();
+
+        EventSystem.current.RaycastAll(pointerEventData, hits);
+
+        if (hits.Count > 0)
+        {
+            foreach (var hit in hits)
+            {
+                var component = hit.gameObject.GetComponent<T>();
+                if (component != null)
+                    return component;
+            }
+        }
+        return null;
     }
 }

@@ -3,20 +3,23 @@ using UnityEngine.UI;
 
 public class BepSlot : MonoBehaviour
 {
-    [SerializeField] Image _img;
+    [SerializeField] Image _imgFood;
 
     private void Awake()
     {
-        _img = transform.GetChild(0).GetComponent<Image>();
-        _img.gameObject.SetActive(false);
+        _imgFood = transform.GetChild(0).GetComponent<Image>();
+        _imgFood.gameObject.SetActive(false);
     }
 
     public void OnSetSlot(Sprite spr)
     {
-        _img.sprite = spr;
-        _img.gameObject.SetActive(true);
-        _img.SetNativeSize();
+        _imgFood.sprite = spr;
+        _imgFood.SetNativeSize();
+        _imgFood.gameObject.SetActive(true);
     }
 
-    public bool HasSlot() => _img.gameObject.activeInHierarchy;
+    public bool HasFood => _imgFood.gameObject.activeInHierarchy;
+    public Sprite GetSpriteFood => _imgFood.sprite;
+
+    public void OnActiveFood(bool active) => _imgFood.gameObject.SetActive(active);
 }

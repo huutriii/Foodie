@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] int _totalFood; //tong so loai thuc an
     [SerializeField] int _totalGrill;// tong so bep
     [SerializeField] Transform _gridGrill;
-
     List<GrillStation> _listGrill;
     float _avgTray; // Trung binh thuc an trong mot dia
 
@@ -47,11 +46,12 @@ public class GameManager : MonoBehaviour
             (useFood[i], useFood[rand]) = (useFood[rand], useFood[i]); // đổi vị trí rand cho i 
         }
 
-        _avgTray = Random.Range(1.5f, 4f);
+        // _avgTray = Random.Range(1.5f, 4f);
+        _avgTray = 2;
         int totalTray = Mathf.RoundToInt(useFood.Count / _avgTray); // tính tổng số đĩa
 
+        List<int> foodPerGrill = this.DistributeEvelyn(_totalGrill, useFood.Count);
         List<int> trayPerGrill = this.DistributeEvelyn(_totalGrill, totalTray);
-        List<int> foodPerGrill = this.DistributeEvelyn(_totalGrill, takeFood.Count);
 
         for (int i = 0; i < _listGrill.Count; i++)
         {

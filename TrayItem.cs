@@ -21,6 +21,8 @@ public class TrayItem : MonoBehaviour
             for (int i = 0; i < items.Count; i++)
             {
                 Image slot = RandomSlot();
+                if (slot == null) break;
+
                 slot.gameObject.SetActive(true);
                 slot.sprite = items[i];
                 slot.SetNativeSize();
@@ -30,8 +32,18 @@ public class TrayItem : MonoBehaviour
 
     Image RandomSlot()
     {
-    rerand: int n = Random.Range(0, _foodList.Count);
-        if (_foodList[n].gameObject.activeInHierarchy) goto rerand;
-        return _foodList[n];
+        List<Image> emptySlots = new List<Image>();
+        for (int i = 0; i < _foodList.Count; i++)
+        {
+            if (!_foodList[i].gameObject.activeInHierarchy)
+            {
+                emptySlots.Add(_foodList[i]);
+            }
+        }
+
+        if (emptySlots.Count == 0) return null;
+
+        int n = Random.Range(0, emptySlots.Count);
+        return emptySlots[n];
     }
 }

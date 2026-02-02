@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class DropDragControl : MonoBehaviour
+public class DropDragControl2 : MonoBehaviour
 {
-    [SerializeField] Image _imgFoodDrag;
+    [SerializeField] Image _imageFoodDrag;
+
     FoodSlot _currentFood, _cacheFood;
-    Vector3 _offSet;
+    Vector3 _offset;
+
     bool _hasDrag;
 
     private void Update()
@@ -19,20 +21,19 @@ public class DropDragControl : MonoBehaviour
                 _hasDrag = true;
                 _cacheFood = _currentFood;
 
-                _imgFoodDrag.gameObject.SetActive(true);
-                _imgFoodDrag.sprite = _currentFood.GetSpriteFood;
-                _imgFoodDrag.SetNativeSize();
+                _imageFoodDrag.gameObject.SetActive(true);
+                _imageFoodDrag.sprite = _currentFood.GetSpriteFood;
+                _imageFoodDrag.SetNativeSize();
 
-                _offSet = _currentFood.transform.position - this.GetWorldMousePos();
+                _offset = _currentFood.transform.position - GetWorldMousePos();
 
                 _currentFood.OnActiveFood(false);
             }
-
         }
 
         if (_hasDrag)
         {
-            _imgFoodDrag.transform.position = GetWorldMousePos() + _offSet;
+            _imageFoodDrag.transform.position = GetWorldMousePos() + _offset;
 
             FoodSlot slot = Ultils.GetRayCastUI<FoodSlot>(Input.mousePosition);
             if (slot != null)
@@ -50,7 +51,6 @@ public class DropDragControl : MonoBehaviour
                 else
                 {
                     FoodSlot slotAvailable = slot.GetSlotNull;
-
                     if (slotAvailable != null)
                     {
                         _cacheFood?.OnHideFood();
@@ -60,7 +60,7 @@ public class DropDragControl : MonoBehaviour
                     }
                     else
                     {
-                        OnClearCache();
+                        OnClearCacheSlot();
                     }
                 }
             }
@@ -74,25 +74,26 @@ public class DropDragControl : MonoBehaviour
             {
                 if (!targetSlot.HasFood)
                 {
-                    targetSlot.OnActiveFood(true);
-                    targetSlot.OnSetSlot(_imgFoodDrag.sprite);
+                    targetSlot.OnSetSlot(_imageFoodDrag.sprite);
+                    Debug.Log("drop");
                 }
                 else
+                {
                     _currentFood.OnActiveFood(true);
+                }
             }
             else
             {
                 _currentFood.OnActiveFood(true);
             }
 
-
-            _imgFoodDrag.gameObject.SetActive(false);
             _hasDrag = false;
             _currentFood = null;
+            _imageFoodDrag.gameObject.SetActive(false);
         }
     }
 
-    public void OnClearCache()
+    public void OnClearCacheSlot()
     {
         if (_cacheFood != null && _cacheFood.GetInstanceID() != _currentFood.GetInstanceID())
         {
@@ -103,22 +104,23 @@ public class DropDragControl : MonoBehaviour
 
     public Vector3 GetWorldMousePos()
     {
-        Canvas canvas = _imgFoodDrag.canvas;
+        Canvas canvas = _imageFoodDrag.canvas;
         Camera uiCamera;
 
         if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+        {
             uiCamera = null;
+        }
         else
         {
             uiCamera = canvas.worldCamera;
         }
 
-        RectTransform rectParent = (RectTransform)_imgFoodDrag.transform.parent;
-        Vector3 mousePosWorld;
+        Vector3 mouseWorldPos;
+        RectTransform rectParent = (RectTransform)_imageFoodDrag.transform.parent;
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(rectParent, Input.mousePosition, uiCamera, out mouseWorldPos);
 
-        RectTransformUtility.ScreenPointToWorldPointInRectangle(rectParent, Input.mousePosition, uiCamera, out mousePosWorld);
-
-
-        return mousePosWorld;
+        return mouseWorldPos;
     }
+
 }

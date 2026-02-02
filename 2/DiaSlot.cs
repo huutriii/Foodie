@@ -4,40 +4,38 @@ using UnityEngine.UI;
 
 public class DiaSlot : MonoBehaviour
 {
-    List<Image> _listThucAnTrenDia;
+    [SerializeField] List<Image> _foodList = new List<Image>();
+
     private void Awake()
     {
-        _listThucAnTrenDia = Ultis2.GetListInChildren<Image>(this.transform);
+        _foodList = Ultis2.GetListInChildren<Image>(this.transform);
 
-        foreach (var i in _listThucAnTrenDia)
+        foreach (var food in _foodList)
         {
-            i.gameObject.SetActive(false);
+            food.gameObject.SetActive(false);
         }
     }
 
-    public void SetThucAnChoDia(List<Image> thucAn)
+    public void OnSetFood(List<Sprite> foodList)
     {
-        if (thucAn.Count <= _listThucAnTrenDia.Count)
+        if (foodList.Count <= _foodList.Count)
         {
-            for (int i = 0; i < thucAn.Count; i++)
+            for (int i = 0; i < foodList.Count; i++)
             {
-                Image slot = this.RandomSlot();
-                slot.gameObject.SetActive(true);
-                slot.sprite = thucAn[i].sprite;
-                slot.SetNativeSize();
+                _foodList[i].sprite = foodList[i];
+                _foodList[i].gameObject.SetActive(true);
+                _foodList[i].SetNativeSize();
             }
         }
     }
 
     public Image RandomSlot()
     {
-        int n;
+        List<Image> emptySlots = _foodList.FindAll(s => !s.gameObject.activeInHierarchy);
+        
+        if (emptySlots.Count == 0) return null;
 
-        while (true)
-        {
-            n = Random.Range(0, _listThucAnTrenDia.Count);
-            if (!_listThucAnTrenDia[n].gameObject.activeInHierarchy)
-                return _listThucAnTrenDia[n];
-        }
+        int randomIdx = Random.Range(0, emptySlots.Count);
+        return emptySlots[randomIdx];
     }
 }

@@ -6,26 +6,28 @@ public class GrillStation : MonoBehaviour
     [SerializeField] private Transform _trayContainer;
     [SerializeField] private Transform _slotContainer;
 
-    List<TrayItem> _totalTray;
-    List<FoodSlot> _totalSlot;
+    public List<TrayItem> _listTray;
+    public List<FoodSlot> _listSlot;
 
     private void Awake()
     {
-        _totalTray = Ultils.GetListInChild<TrayItem>(_trayContainer);
-        _totalSlot = Ultils.GetListInChild<FoodSlot>(_slotContainer);
+        _listTray = Ultils.GetListInChild<TrayItem>(_trayContainer);
+        _listSlot = Ultils.GetListInChild<FoodSlot>(_slotContainer);
     }
 
     public void OnInitGrill(int totalTray, List<Sprite> listFood)
     {
         // xử lí set giá trị cho bếp trước
-        int foodCount = Random.Range(1, _totalSlot.Count + 1);
-        List<Sprite> list = listFood;
-        List<Sprite> listSlot = Ultils.TakeAndRemoveRandom<Sprite>(list, foodCount);
+        int foodCount = Random.Range(1, _listSlot.Count + 1);
+        List<Sprite> listSlot = Ultils.TakeAndRemoveRandom<Sprite>(listFood, foodCount);
 
         for (int i = 0; i < listSlot.Count; i++)
         {
             FoodSlot slot = this.RandomSlot();
-            slot.OnSetSlot(listSlot[i]);
+            if (slot != null)
+                slot.OnSetSlot(listSlot[i]);
+            else
+                break;
         }
 
         // set giá trị cho đĩa
@@ -53,23 +55,45 @@ public class GrillStation : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < _totalTray.Count; i++)
+        for (int i = 0; i < _listTray.Count; i++)
         {
             bool active = i < remindFood.Count;
-            _totalTray[i].gameObject.SetActive(active);
+            _listTray[i].gameObject.SetActive(active);
 
             if (active)
             {
-                _totalTray[i].OnSetFood(remindFood[i]);
+                _listTray[i].OnSetFood(remindFood[i]);
             }
         }
     }
 
+    public void OnCheckDrop(Sprite spr)
+    {
+        FoodSlot slotAvailable = this.GetSlotNull();
+        if (slotAvailable != null)
+        {
+            slotAvailable.OnSetSlot(spr);
+            slotAvailable.OnHideFood();
+        }
+    }
+
+    public FoodSlot GetSlotNull()
+    {
+        for (int i = 0; i < _listSlot.Count; i++)
+        {
+            if (!_listSlot[i].HasFood)
+                return _listSlot[i];
+        }
+
+        return null;
+    }
+
     public FoodSlot RandomSlot()
     {
-    reRand: int n = Random.Range(0, _totalSlot.Count);
-        if (_totalSlot[n].HasFood) goto reRand;
+        List<FoodSlot> emptySlots = _listSlot.FindAll(s => !s.HasFood);
+        if (emptySlots.Count == 0) return null;
 
-        return _totalSlot[n];
+        int n = Random.Range(0, emptySlots.Count);
+        return emptySlots[n];
     }
 }
