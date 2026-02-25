@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-
+using DG.Tweening;
 public class DropDragControl : MonoBehaviour
 {
     [SerializeField] Image _imgFoodDrag;
@@ -68,23 +68,21 @@ public class DropDragControl : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0) && _hasDrag)
         {
-            FoodSlot targetSlot = Ultils.GetRayCastUI<FoodSlot>(Input.mousePosition);
 
-            if (targetSlot != null)
+            if(_cacheFood != null)
             {
-                if (!targetSlot.HasFood)
+                _cacheFood.OnMerge();
+                _imgFoodDrag.transform.DOMove(_cacheFood.transform.position, 0.15f).OnComplete(() =>
                 {
-                    targetSlot.OnActiveFood(true);
-                    targetSlot.OnSetSlot(_imgFoodDrag.sprite);
+                    _imgFoodDrag.gameObject.SetActive(false);
+                    _cacheFood.OnSetSlot(_currentFood.GetSpriteFood);
+                    _cacheFood.OnActiveFood(true);
+                    _cacheFood =  null;
                 }
-                else
-                    _currentFood.OnActiveFood(true);
-            }
-            else
-            {
-                _currentFood.OnActiveFood(true);
+                );
             }
 
+            FoodSlot targetSlot = Ultils.GetRayCastUI<FoodSlot>(Input.mousePosition);
 
             _imgFoodDrag.gameObject.SetActive(false);
             _hasDrag = false;
